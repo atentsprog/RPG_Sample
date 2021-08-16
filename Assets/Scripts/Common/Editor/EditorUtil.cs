@@ -6,12 +6,51 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
 
+
+[InitializeOnLoad]
+public class EditorSelectionManager : ScriptableWizard
+{
+
+    public static GameObject lockObject;
+    [MenuItem("Util/SelectionLock %L")]
+    private static void SelectionLock()
+    {
+        lockObject = Selection.activeGameObject;
+    }
+    [MenuItem("Util/Selection UnLock %U")]
+    private static void SelectionUnLock()
+    {
+        lockObject = null;
+    }
+    private static void RestoreSelection()
+    {
+        //if (lockObject != null)
+            Selection.activeGameObject = lockObject;
+    }
+    static EditorSelectionManager()
+    {
+        Selection.selectionChanged += OnSelectionChange;
+        EditorApplication.hierarchyChanged += OnHierarchyChanged;
+    }
+    static void OnSelectionChange()
+    {
+        Debug.Log("Selection changed");
+        RestoreSelection();
+        // use the Selection class to determine which object(s) are selected
+    }
+
+    static void OnHierarchyChanged()
+    {
+        Debug.Log("Hierarchy changed");
+        RestoreSelection();
+    }
+}
+
 public class EditorUtil
 {
     //# : shift
     //& : alt
     //% :  Winows의 Ctrl, macOS의 cmd키
-
     [MenuItem("Util/Open SourceTree #&s")]
     private static void OpenSourceTree()
     {
